@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Perintis v0.1.2: Wirastama Rakha</title>
+<style>
+:root{--bg:#EDF1F3;--surface:#fff;--ink:#13232B;--muted:#5A6B74;--line:#D3DCE1;--accent:#0E7C7B;--accent-ink:#fff;--warn:#A86A00;--bad:#C0392B;--wk:#F6E7C1;--wk-ink:#5B4300;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E181D;--surface:#16252C;--ink:#E7EEF1;--muted:#93A5AE;--line:#27383F;--accent:#3CC1BD;--accent-ink:#06201F;--warn:#E3B04B;--bad:#EF7A6B;--wk:#3A3216;--wk-ink:#F2D98A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E181D;--surface:#16252C;--ink:#E7EEF1;--muted:#93A5AE;--line:#27383F;--accent:#3CC1BD;--accent-ink:#06201F;--warn:#E3B04B;--bad:#EF7A6B;--wk:#3A3216;--wk-ink:#F2D98A;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:1.05rem;margin:0}
+.sub{color:var(--muted);font-size:.85rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.week div{text-align:center;padding:6px 0;border-radius:8px;font-size:.78rem;border:1px solid var(--line);color:var(--muted)}
+.week .we{background:var(--wk);color:var(--wk-ink);border-color:transparent}
+.week .now{outline:2px solid var(--accent);outline-offset:1px;font-weight:700;color:var(--ink)}
+.cash{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.lbl{color:var(--muted);font-size:.8rem}
+.bars{display:grid;gap:10px;margin-top:12px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar.warn i{background:var(--warn)}.bar.bad i{background:var(--bad)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.ok{color:var(--accent)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.seg button{padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:.85rem}
+.seg button small{display:block;font-size:.72rem;opacity:.85}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.choice{display:block;width:100%;text-align:left;padding:12px;margin-top:8px;border:1px solid var(--line);border-radius:12px;background:transparent}
+.choice:hover{border-color:var(--accent)}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.choice small{color:var(--muted);display:block}
+.choice[disabled]{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.log{margin:8px 0 0;padding:0;list-style:none;font-size:.85rem}
+.log li{padding:5px 0;border-top:1px solid var(--line)}
+.log li:first-child{border-top:0}
+.prev div{margin-top:4px;font-variant-numeric:tabular-nums}
+.alert{border-color:var(--bad)}
+.end{text-align:center}
+.primary{margin-top:10px;padding:11px 16px;border-radius:10px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700}
+.full{width:100%}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.8rem;padding:0;margin-top:14px}
+.mini{margin-top:8px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:transparent;font-size:.85rem}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(function(){
+var KEY="perintis-v012",START=new Date(2027,0,4),YEAR=365;
+var HARI=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],BLN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+var KOS=1800000,PULSA=100000,UTIL=200000,GAJI0=6000000,CAP=8,RATE=0.004,MAXD=4000000,BURN=[400000,650000,1000000];
+var FOOD={hemat:{n:"Hemat",c:30000,s:-5},standar:{n:"Standar",c:45000,s:0},enak:{n:"Enak",c:75000,s:5}};
+var TRANS={krl:{n:"KRL/TJ",c:25000,s:-5},ojol:{n:"Ojol",c:50000,s:0}};
+var WK={rest:["Istirahat di kos",30,0,0,0],study:["Upskilling malam",-15,0,2,0],ot:["Lembur 2 jam",-25,0,0,120000],hang:["Nongkrong",10,60000,0,0]};
+var WE={rest:["Rebahan seharian",50,0,0,0],study:["Belajar intensif",-25,0,5,0],hang:["Jalan dan nongkrong",20,120000,0,0]};
+var s,sel="rest";
+function fresh(){return{day:0,cash:3000000,stam:80,pts:0,salary:GAJI0,food:"standar",trans:"krl",lastLvl:0,prevLvl:0,debt:0,burn:0,forced:0,hist:[],log:["Wisuda beres. Hari pertama sebagai pekerja kantoran di Jakarta."],over:null}}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&typeof o.day==="number")return o}}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+s=load();
+function rp(n){var v=Math.round(Math.abs(n)).toLocaleString("id-ID");return(n<0?"−":"")+"Rp"+v}
+function rb(n){return"Rp"+Math.round(n/1000)+"rb"}
+function sg(n){return(n>0?"+":"−")+Math.abs(n)}
+function tag(st,c,inc,p){var a=[];if(st)a.push(sg(st)+" Stamina");if(c)a.push("−"+rb(c));if(inc)a.push("+"+rb(inc));if(p)a.push("Skill +"+p);return a.join(" | ")||"Tanpa efek"}
+function dt(){var d=new Date(START);d.setDate(d.getDate()+s.day);return d}
+function we(d){var g=d.getDay();return g===0||g===6}
+function prog(){var p=s.pts,l=0,n=10;while(p>=n){p-=n;l++;n=10+5*l}return{l:l,rem:p,need:n}}
+function lvl(){return prog().l}
+function mult(){return Math.min(1.5,1+0.05*lvl())}
+function essential(){return KOS+PULSA+UTIL+FOOD[s.food].c*30+TRANS[s.trans].c*22}
+function calc(k){
+ var d=dt(),w=we(d),f=FOOD[s.food],t=TRANS[s.trans],A=w?WE:WK,r={inc:0,exp:f.c,st:0,pts:0,pay:0,n:[]};
+ r.forced=s.forced>0;
+ if(r.forced){r.n.push("Istirahat paksa karena burnout: tidak kerja, tidak ada XP.")}
+ else{
+  r.st=f.s;
+  if(!w){r.exp+=t.c;r.st+=t.s-25;r.n.push("Kerja kantor via "+t.n+".")}
+  var a=A[k]||A.rest;r.st+=a[1];r.exp+=a[2];r.pts=a[3];r.inc+=a[4];r.n.push(a[0]+".")
+ }
+ if(d.getDate()===1){r.exp+=KOS+PULSA+UTIL;r.n.push("Bayar kos, pulsa, utilitas: "+rp(KOS+PULSA+UTIL)+".")}
+ r.intr=Math.round(s.debt*RATE);
+ var owe=s.debt+r.intr;
+ if(d.getDate()===25){r.inc+=s.salary;r.pay=Math.min(owe,s.salary);r.n.push("Gajian masuk: "+rp(s.salary)+(r.pay?", otomatis dipotong buat utang "+rp(r.pay):"")+".")}
+ r.ns=r.forced?65:Math.max(0,Math.min(100,s.stam+r.st));
+ r.burn=!r.forced&&r.ns<=0;
+ if(r.burn){r.cost=BURN[Math.min(s.burn,2)];r.exp+=r.cost;r.n.push("Burnout ke-"+(s.burn+1)+": biaya berobat "+rp(r.cost)+", besok istirahat paksa.")}
+ var c=s.cash+r.inc-r.exp-r.pay;
+ r.borrow=c<0?-c:0;r.nc=c<0?0:c;r.nd=owe-r.pay+r.borrow;
+ if(r.borrow)r.n.push("Kas minus, Pinjam Darurat otomatis "+rp(r.borrow)+".");
+ r.dst=r.ns-s.stam;r.dc=r.nc-s.cash;
+ return r}
+function act(){
+ if(s.over)return;
+ var d=dt(),rn=[];
+ if(d.getDate()===1&&(d.getMonth()===6||d.getMonth()===0)){
+  var g=lvl()-s.lastLvl,p=Math.min(CAP,g*2);s.lastLvl=lvl();
+  if(p>0){s.salary=Math.round(s.salary*(1+p/100));rn.push("Review kinerja: gaji naik "+p+"%.")}else rn.push("Review kinerja: tidak ada kenaikan, skill belum naik level.")}
+ var r=calc(sel);
+ s.cash=r.nc;s.debt=r.nd;s.stam=r.ns;s.pts+=r.pts;
+ if(r.forced)s.forced=0;
+ if(r.burn){s.burn++;s.forced=1}
+ var pl=s.prevLvl||0;if(lvl()>pl)r.n.push("Skill naik ke level "+lvl()+".");s.prevLvl=lvl();
+ s.hist.push({i:r.inc,e:r.exp+r.intr});if(s.hist.length>60)s.hist.shift();
+ s.log.unshift(HARI[d.getDay()]+": "+rn.concat(r.n).join(" ")+" Keluar "+rp(r.exp)+(r.inc?", masuk "+rp(r.inc):"")+(r.intr?", bunga utang "+rp(r.intr):"")+".");
+ s.log=s.log.slice(0,8);
+ s.day++;sel="rest";
+ if(s.debt>MAXD)s.over="bangkrut";else if(s.day>=YEAR)s.over="tamat";
+ save();render()
+}
+function payDebt(){var p=Math.min(s.cash,s.debt);if(p>0){s.cash-=p;s.debt-=p;s.log.unshift("Bayar utang manual: "+rp(p)+".");s.log=s.log.slice(0,8);save();render()}}
+function reset(){s=fresh();sel="rest";save();render()}
+function nextPay(d){var t=new Date(d),c=0;while(t.getDate()!==25){t.setDate(t.getDate()+1);c++}return c}
+function render(){
+ var d=dt(),w=we(d),A=w?WE:WK,h=s.hist.slice(-30),i30=0,e30=0,pg=prog();
+ if(!A[sel])sel="rest";
+ h.forEach(function(x){i30+=x.i;e30+=x.e});
+ var sr=i30>0?(i30-e30)/i30*100:null,rw=s.cash/essential();
+ var srC=sr===null?"":sr<10?"bad":sr<20?"warn":"ok",rwC=rw<3?"bad":rw<6?"warn":"ok";
+ var sc=s.stam<25?"bad":s.stam<50?"warn":"";
+ var idx=(d.getDay()+6)%7,wk="";
+ ["Sen","Sel","Rab","Kam","Jum","Sab","Min"].forEach(function(n,j){wk+='<div class="'+(j>4?"we ":"")+(j===idx?"now":"")+'">'+n+"</div>"});
+ var html='<div class="top"><div><h1>Wirastama Rakha</h1><div class="sub">Fresh graduate, Jakarta. Hari ke-'+Math.min(s.day+1,YEAR)+" dari "+YEAR+'</div></div><div class="sub">'+HARI[d.getDay()]+", "+d.getDate()+" "+BLN[d.getMonth()]+" "+d.getFullYear()+"</div></div>"
+ +'<div class="week" aria-label="Kalender minggu ini">'+wk+"</div>"
+ +'<div class="card"><div class="lbl">Saldo kas</div><div class="cash '+(s.cash<500000?"bad":"")+'">'+rp(s.cash)+'</div><div class="lbl">Gaji bersih '+rp(s.salary)+" tiap tanggal 25 (review kinerja tiap Januari dan Juli, naik maks. 8%). Gajian berikutnya "+(nextPay(d)?nextPay(d)+" hari lagi":"hari ini")+'.</div>'
+ +'<div class="bars"><div><div class="lbl">Stamina '+Math.round(s.stam)+'/100 (burnout '+s.burn+'x)</div><div class="bar '+sc+'"><i style="width:'+Math.max(0,s.stam)+'%"></i></div></div>'
+ +'<div><div class="lbl">Skill level '+pg.l+" ("+pg.rem+"/"+pg.need+' poin ke level berikutnya). Pengali lapak dan freelance ×'+mult().toFixed(2)+'</div><div class="bar"><i style="width:'+pg.rem/pg.need*100+'%"></i></div></div></div></div>';
+ if(s.debt>0&&!s.over){
+  html+='<div class="card alert"><b class="bad">Peringatan likuiditas: utang aktif '+rp(s.debt)+'</b><div class="lbl">Batas utang '+rp(MAXD)+'. Bunga majemuk 0,4% per hari (±12,7% per 30 hari). Gajian tanggal 25 otomatis melunasi utang lebih dulu.</div>'
+  +(s.cash>0?'<button class="mini" id="pay">Bayar utang '+rp(Math.min(s.cash,s.debt))+" dari kas</button>":"")+"</div>"}
+ html+='<div class="card two"><div><div class="lbl">Savings rate (30 hari)</div><div class="m '+srC+'">'+(sr===null?"–":sr.toFixed(0)+"%")+'</div><div class="lbl">'+(sr===null?"Muncul setelah gajian pertama.":"Target awal: 20% atau lebih.")+'</div></div>'
+ +'<div><div class="lbl">Emergency runway</div><div class="m '+rwC+'">'+rw.toFixed(1)+' bln</div><div class="lbl">Kas dibagi pengeluaran wajib '+rp(essential())+" per bulan.</div></div></div>";
+ if(s.over){
+  var nw=s.cash-s.debt;
+  html+='<div class="card end"><h1>'+(s.over==="bangkrut"?"Bangkrut, game berakhir":"Tahun pertama selesai")+'</h1><p>'+(s.over==="bangkrut"?"Utang melewati "+rp(MAXD)+". Coba seimbangkan stamina, pengeluaran, dan dana darurat.":"Kas akhir "+rp(s.cash)+", utang "+rp(s.debt)+", kekayaan bersih "+rp(nw)+", skill level "+lvl()+", burnout "+s.burn+" kali.")+'</p><button class="primary" id="rs">Main lagi</button></div>'
+ }else{
+  var r=calc(sel),f=FOOD[s.food];
+  html+='<div class="card"><div class="lbl">Gaya makan (per hari)</div><div class="seg">'
+  +Object.keys(FOOD).map(function(k){var x=FOOD[k];return'<button data-f="'+k+'" aria-pressed="'+(s.food===k)+'">'+x.n+"<small>"+tag(x.s,x.c)+"</small></button>"}).join("")+'</div>'
+  +'<div class="lbl" style="margin-top:10px">Transport hari kerja (per hari)</div><div class="seg" style="grid-template-columns:1fr 1fr">'+Object.keys(TRANS).map(function(k){var x=TRANS[k];return'<button data-t="'+k+'" aria-pressed="'+(s.trans===k)+'">'+x.n+"<small>"+tag(x.s,x.c)+"</small></button>"}).join("")+'</div>';
+  if(s.forced>0){html+='<div class="lbl" style="margin-top:12px"><b class="bad">Istirahat paksa.</b> Burnout membuat Rakha tumbang hari ini: tidak kerja dan tidak ada XP. Stamina pulih ke 65 setelahnya.</div>'}
+  else{
+   html+='<div class="lbl" style="margin-top:12px">'+(!w?"Hari kerja (kerja kantor −25 Stamina). Sepulang kantor, mau apa?":"Akhir pekan. Seharian bebas, mau apa?")+"</div>"
+   +Object.keys(A).map(function(k){var a=A[k];return'<button class="choice" data-a="'+k+'" aria-pressed="'+(sel===k)+'">'+a[0]+"<small>"+tag(a[1],a[2],a[4],a[3])+"</small></button>"}).join("")}
+  html+='</div><div class="card prev"><div class="lbl">Estimasi perubahan hari ini (termasuk makan, transport, tagihan, gaji)</div>'
+  +"<div>Stamina "+Math.round(s.stam)+" jadi "+r.ns+" ("+(r.dst?sg(r.dst):"±0")+")</div>"
+  +"<div>Kas "+rp(s.cash)+" jadi "+rp(r.nc)+" ("+(r.dc>0?"+":"")+rp(r.dc)+")</div>"
+  +((s.debt||r.borrow)?"<div>Utang "+rp(s.debt)+" jadi "+rp(r.nd)+" (bunga +"+rp(r.intr)+(r.pay?", bayar −"+rp(r.pay):"")+(r.borrow?", pinjam +"+rp(r.borrow):"")+")</div>":"")
+  +(r.burn?'<div class="bad">Stamina habis: burnout ke-'+(s.burn+1)+", biaya berobat "+rp(r.cost)+", besok istirahat paksa.</div>":"")
+  +(r.borrow?'<div class="warn">Kas minus: Pinjam Darurat '+rp(r.borrow)+" aktif otomatis.</div>":"")
+  +(r.nd>MAXD?'<div class="bad">Total utang melewati '+rp(MAXD)+": Game Over.</div>":"")
+  +'<button class="primary full" id="go">Lanjut hari</button>'
+  +'<button class="choice" disabled><span>Aplikasi HP: investasi<small>Hadir di v0.2</small></span></button>'
+  +'<button class="choice" disabled><span>Lapak akhir pekan<small>Hadir di v0.3</small></span></button></div>'
+ }
+ html+='<div class="card"><div class="lbl">Catatan terakhir</div><ul class="log">'+s.log.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div>'
+ +'<div class="sub" style="margin-top:12px">Semua angka adalah asumsi simulasi (UMP Jakarta 2026 Rp5.729.876), bukan saran keuangan.</div>'
+ +'<button class="link" id="rs2">Mulai ulang</button>';
+ document.getElementById("app").innerHTML=html;
+ function on(q,fn){document.querySelectorAll(q).forEach(function(b){b.onclick=function(){fn(b)}})}
+ on("[data-a]",function(b){sel=b.dataset.a;render()});
+ on("[data-f]",function(b){s.food=b.dataset.f;save();render()});
+ on("[data-t]",function(b){s.trans=b.dataset.t;save();render()});
+ on("#go",act);on("#pay",payDebt);on("#rs",reset);on("#rs2",reset)
+}
+render()
+})();
+</script>
+</body>
+</html>
