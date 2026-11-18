@@ -2,7 +2,8 @@
 
 An interactive, zero-dependency personal finance and life-risk simulator built with vanilla HTML, CSS, and JavaScript. Designed to model daily cashflow dynamics, liquidity crunch, compounding debt, and human-capital trade-offs for a fresh graduate navigating Jakarta's cost of living.
 
-🔗 **Live Demo:** [Insert your GitHub Pages link here]  
+🔗 **Live Demo:** https://wirastamarakha.github.io/perintis-actuarial-simulation/]
+  
 *(Note: The in-game UI is localized in Bahasa Indonesia to reflect real-world Jakarta economic parameters.)*
 
 ---
